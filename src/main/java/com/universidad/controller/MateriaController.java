@@ -4,6 +4,7 @@ import com.universidad.model.Materia;
 import com.universidad.service.IMateriaService;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 
 import com.universidad.dto.MateriaDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class MateriaController {
         logger.info("[MATERIA] Inicio obtenerTodasLasMaterias: {}", inicio);
         List<MateriaDTO> result = materiaService.obtenerTodasLasMaterias();
         long fin = System.currentTimeMillis();
-        logger.info("[MATERIA] Fin obtenerTodasLasMaterias: {} (Duracion: {} ms)", fin, (fin-inicio));
+        logger.info("[MATERIA] Fin obtenerTodasLasMaterias: {} (Duracion: {} ms)", fin, (fin - inicio));
         return ResponseEntity.ok(result);
     }
 
@@ -43,7 +44,7 @@ public class MateriaController {
         logger.info("[MATERIA] Inicio obtenerMateriaPorId: {}", inicio);
         MateriaDTO materia = materiaService.obtenerMateriaPorId(id);
         long fin = System.currentTimeMillis();
-        logger.info("[MATERIA] Fin obtenerMateriaPorId: {} (Duracion: {} ms)", fin, (fin-inicio));
+        logger.info("[MATERIA] Fin obtenerMateriaPorId: {} (Duracion: {} ms)", fin, (fin - inicio));
         if (materia == null) {
             return ResponseEntity.notFound().build();
         }
@@ -60,17 +61,20 @@ public class MateriaController {
     }
 
     @PostMapping
-    public ResponseEntity<MateriaDTO> crearMateria(@RequestBody MateriaDTO materia) {
-        //MateriaDTO materiaDTO = new MateriaDTO(materia.getId(), materia.getNombre(), materia.getCodigoUnico());
+    public ResponseEntity<MateriaDTO> crearMateria(@Valid @RequestBody MateriaDTO materia) {
+        // MateriaDTO materiaDTO = new MateriaDTO(materia.getId(), materia.getNombre(),
+        // materia.getCodigoUnico());
         MateriaDTO nueva = materiaService.crearMateria(materia);
         return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MateriaDTO> actualizarMateria(@PathVariable Long id, @RequestBody MateriaDTO materia) {
-        //MateriaDTO materiaDTO = new MateriaDTO(materia.getId(), materia.getNombreMateria(), materia.getCodigoUnico());
+    public ResponseEntity<MateriaDTO> actualizarMateria(@PathVariable Long id, @Valid @RequestBody MateriaDTO materia) {
+        // MateriaDTO materiaDTO = new MateriaDTO(materia.getId(),
+        // materia.getNombreMateria(), materia.getCodigoUnico());
         MateriaDTO actualizadaDTO = materiaService.actualizarMateria(id, materia);
-        //Materia actualizada = new Materia(actualizadaDTO.getId(), actualizadaDTO.getNombre(), actualizadaDTO.getCodigoUnico());
+        // Materia actualizada = new Materia(actualizadaDTO.getId(),
+        // actualizadaDTO.getNombre(), actualizadaDTO.getCodigoUnico());
         return ResponseEntity.ok(actualizadaDTO);
     }
 
@@ -80,8 +84,10 @@ public class MateriaController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/formaria-circulo/{materiaId}/{prerequisitoId}") // Endpoint para verificar si una materia formaría un círculo con un prerequisito
-    @Transactional // Anotación que indica que este método debe ejecutarse dentro de una transacción
+    @GetMapping("/formaria-circulo/{materiaId}/{prerequisitoId}") // Endpoint para verificar si una materia formaría un
+                                                                  // círculo con un prerequisito
+    @Transactional // Anotación que indica que este método debe ejecutarse dentro de una
+                   // transacción
     public ResponseEntity<Boolean> formariaCirculo(@PathVariable Long materiaId, @PathVariable Long prerequisitoId) {
         MateriaDTO materiaDTO = materiaService.obtenerMateriaPorId(materiaId); // Obtiene la materia por su ID
         if (materiaDTO == null) { // Verifica si la materia existe
@@ -90,7 +96,8 @@ public class MateriaController {
         Materia materia = new Materia(materiaDTO.getId(), materiaDTO.getNombreMateria(), materiaDTO.getCodigoUnico());
         // Crea una nueva instancia de Materia con los datos obtenidos
         // Verifica si agregar el prerequisito formaría un círculo
-        boolean circulo = materia.formariaCirculo(prerequisitoId); // Llama al método formariaCirculo de la clase Materia
+        boolean circulo = materia.formariaCirculo(prerequisitoId); // Llama al método formariaCirculo de la clase
+                                                                   // Materia
         if (circulo) { // Si formaría un círculo, retorna un error 400 Bad Request
             return ResponseEntity.badRequest().body(circulo);
         }

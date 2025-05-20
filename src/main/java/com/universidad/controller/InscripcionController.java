@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -17,7 +16,7 @@ public class InscripcionController {
     private IInscripcionService inscripcionService;
 
     @PostMapping
-    public ResponseEntity<InscripcionDTO> crear(@Valid @RequestBody InscripcionDTO dto) {
+    public ResponseEntity<InscripcionDTO> crear(@RequestBody InscripcionDTO dto) {
         return new ResponseEntity<>(inscripcionService.crearInscripcion(dto), HttpStatus.CREATED);
     }
 
@@ -33,7 +32,7 @@ public class InscripcionController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<InscripcionDTO> actualizar(@PathVariable Long id, @Valid @RequestBody InscripcionDTO dto) {
+    public ResponseEntity<InscripcionDTO> actualizar(@PathVariable Long id, @RequestBody InscripcionDTO dto) {
         return ResponseEntity.ok(inscripcionService.actualizarInscripcion(id, dto));
     }
 
